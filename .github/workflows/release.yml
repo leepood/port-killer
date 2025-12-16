@@ -47,7 +47,17 @@ jobs:
         run: swift build -c release
 
       - name: Create app bundle
-        run: ./scripts/build-app.sh
+        run: |
+          # Debug: Check Sparkle framework structure before copying
+          echo "=== Checking Sparkle framework in artifacts ==="
+          ls -la .build/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework/ || echo "artifacts path not found"
+          ls -la .build/arm64-apple-macosx/release/Sparkle.framework/ || echo "release path not found"
+
+          ./scripts/build-app.sh
+
+          # Debug: Check copied framework
+          echo "=== Checking copied Sparkle framework ==="
+          ls -la .build/release/PortKiller.app/Contents/Frameworks/Sparkle.framework/
 
       - name: Sign app with Developer ID
         env:
