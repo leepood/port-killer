@@ -284,9 +284,10 @@ struct SettingsView: View {
     }
 
     private func startPermissionTimer() {
-        permissionCheckTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [self] _ in
+        guard permissionCheckTimer == nil else { return }
+        permissionCheckTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { _ in
             Task { @MainActor in
-                checkPermissions()
+                self.checkPermissions()
             }
         }
     }

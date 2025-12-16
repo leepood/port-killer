@@ -227,8 +227,8 @@ struct ProcessGroupRow: View {
 					.fill(isKilling ? .orange : .green)
 					.frame(width: 6, height: 6)
 					.shadow(color: (isKilling ? Color.orange : Color.green).opacity(0.5), radius: 3)
-					.opacity(isKilling ? 0.3 : 1)
-					.animation(.easeInOut(duration: 0.4).repeatForever(autoreverses: true), value: isKilling)
+					.opacity(isKilling ? 0.5 : 1)
+					.animation(.easeInOut(duration: 0.3), value: isKilling)
 				
 				// Process name with port count
 				Text(group.processName)
@@ -351,42 +351,6 @@ struct NestedPortRow: View {
 			Button {
 				NSPasteboard.general.clearContents()
 				NSPasteboard.general.setString("http://localhost:\(port.port)", forType: .string)
-			} label: {
-				Label("Copy URL",systemImage: "document.on.clipboard")
-			}
-		}
-		.padding(.horizontal, 12)
-		.padding(.vertical, 6)
-		.contentShape(Rectangle())
-		.contextMenu {
-			Button { state.toggleFavorite(port.port) } label: {
-				Label(state.isFavorite(port.port) ? "Remove from Favorites" : "Add to Favorites",
-					  systemImage: state.isFavorite(port.port) ? "star.slash" : "star")
-			}
-			Divider()
-			Button { state.toggleWatch(port.port) } label: {
-				Label(state.isWatching(port.port) ? "Stop Watching" : "Watch Port",
-					  systemImage: state.isWatching(port.port) ? "eye.slash" : "eye")
-			}
-			Divider()
-			Button {
-				if let url = URL(string: "http://localhost:\(port.port)") {
-					NSWorkspace.shared.open(url)
-				}
-			} label: {
-				Label("Open in Browser",systemImage: "globe.fill")
-			}
-			
-			Button {
-				NSPasteboard.general.clearContents()
-				NSPasteboard.general.setString("http://localhost:\(port.port)", forType: .string)
-			} label: {
-				Label("Copy URL",systemImage: "document.on.clipboard")
-			}
-			
-			
-			Button {
-				NSPasteboard.general.setString("http://localhost:\(port.displayPort)", forType: .URL)
 			} label: {
 				Label("Copy URL",systemImage: "document.on.clipboard")
 			}
