@@ -214,9 +214,25 @@ jobs:
           SIGNATURE=$(echo "$SIGN_OUTPUT" | grep -o 'edSignature="[^"]*"' | sed 's/edSignature="//;s/"$//')
           echo "SPARKLE_SIGNATURE=$SIGNATURE" >> $GITHUB_ENV
 
-      - name: Update appcast.xml
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Create GitHub Release with Changelog
+        run: |
+          npx changelogithub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload DMG to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.DMG_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update appcast.xml
         run: |
           VERSION="${GITHUB_REF_NAME#v}"  # Remove 'v' prefix (v1.2.7 -> 1.2.7)
           BUILD_NUMBER=$(git rev-list --count HEAD)  # Same as CFBundleVersion in app
@@ -226,8 +242,6 @@ jobs:
           echo "Version: $VERSION, Build: $BUILD_NUMBER"
 
           # Create or update appcast.xml
-          # sparkle:version must match CFBundleVersion (build number)
-          # sparkle:shortVersionString must match CFBundleShortVersionString (marketing version)
           cat > appcast.xml << 'APPCAST_EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
@@ -268,21 +282,3 @@ jobs:
           git add appcast.xml
           git commit -m "chore: update appcast.xml for ${GITHUB_REF_NAME}" || echo "No changes to commit"
           git push origin main
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-
-      - name: Create GitHub Release with Changelog
-        run: |
-          npx changelogithub
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload DMG to Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: ${{ env.DMG_NAME }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
