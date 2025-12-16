@@ -43,6 +43,18 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH
 
+      - name: Update version in Info.plist
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"  # Remove 'v' prefix (v1.2.4 -> 1.2.4)
+          BUILD_NUMBER=$(git rev-list --count HEAD)
+
+          # Update CFBundleShortVersionString
+          sed -i '' "s/<string>.*<\/string><!--VERSION-->/<string>${VERSION}<\/string><!--VERSION-->/" Resources/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${VERSION}" Resources/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${BUILD_NUMBER}" Resources/Info.plist
+
+          echo "Updated version to ${VERSION} (build ${BUILD_NUMBER})"
+
       - name: Build release binary
         run: swift build -c release
 
