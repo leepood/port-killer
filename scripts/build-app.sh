@@ -29,8 +29,9 @@ if [ -f "Resources/AppIcon.icns" ]; then
 fi
 
 # Copy SPM resource bundle (contains toolbar icons)
+# SPM looks for bundle at app root level, not in Resources
 if [ -d "$BUILD_DIR/PortKiller_PortKiller.bundle" ]; then
-    cp -r "$BUILD_DIR/PortKiller_PortKiller.bundle" "$RESOURCES_DIR/"
+    cp -r "$BUILD_DIR/PortKiller_PortKiller.bundle" "$APP_DIR/"
 fi
 
 echo "🔏 Signing app bundle..."
