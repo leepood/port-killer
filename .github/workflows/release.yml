@@ -105,12 +105,25 @@ jobs:
           # Create ZIP for notarization
           ditto -c -k --keepParent "$APP_PATH" "PortKiller.zip"
 
-          # Submit for notarization
-          xcrun notarytool submit "PortKiller.zip" \
+          # Submit for notarization and capture output
+          SUBMIT_OUTPUT=$(xcrun notarytool submit "PortKiller.zip" \
             --apple-id "$APPLE_ID" \
             --password "$APPLE_ID_PASSWORD" \
             --team-id "$APPLE_TEAM_ID" \
-            --wait
+            --wait 2>&1) || true
+
+          echo "$SUBMIT_OUTPUT"
+
+          # Extract submission ID and get detailed log if failed
+          SUBMISSION_ID=$(echo "$SUBMIT_OUTPUT" | grep -o 'id: [a-f0-9-]*' | head -1 | cut -d' ' -f2)
+          if echo "$SUBMIT_OUTPUT" | grep -q "Invalid"; then
+            echo "=== NOTARIZATION FAILED - Getting detailed log ==="
+            xcrun notarytool log "$SUBMISSION_ID" \
+              --apple-id "$APPLE_ID" \
+              --password "$APPLE_ID_PASSWORD" \
+              --team-id "$APPLE_TEAM_ID"
+            exit 1
+          fi
 
           # Staple the notarization ticket
           xcrun stapler staple "$APP_PATH"
