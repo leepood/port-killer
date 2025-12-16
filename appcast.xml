@@ -7,15 +7,15 @@
     <language>en</language>
     <item>
       <title>Version 2.0.0</title>
-      <pubDate>Tue, 16 Dec 2025 18:28:11 +0000</pubDate>
-      <sparkle:version>56</sparkle:version>
+      <pubDate>Tue, 16 Dec 2025 18:37:56 +0000</pubDate>
+      <sparkle:version>59</sparkle:version>
       <sparkle:shortVersionString>2.0.0</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
       <enclosure
         url="https://github.com/productdevbook/port-killer/releases/download/v2.0.0/PortKiller-v2.0.0-arm64.dmg"
-        length="2384845"
+        length="2388118"
         type="application/octet-stream"
-        sparkle:edSignature="NGjdcKveIMxpbAE3dUmdq7Hjjgy887eOScna7u33z64JWdm3t8lzi3EqR7kBrf2rhg8Ccwd8ipW9fyXE8zKIBA==" />
+        sparkle:edSignature="Wv7a9LQ82okIoC+M5nJUZU5xbnzxTo+cgcy6w0NfZ0Vzws084f3/YQfhHtsuUnhN0a+KkFHkYyaqX7BCkWrGAA==" />
     </item>
   </channel>
 </rss>
