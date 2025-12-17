@@ -17,7 +17,7 @@ Perfect for developers who need to quickly free up ports like 3000, 8080, 5173, 
 </p>
 
 <p align="center">
-  <img src=".github/assets/image.jpeg" alt="PortKiller Demo" width="400">
+  <img src=".github/assets/image.jpeg" alt="PortKiller Demo" width="full">
 </p>
 
 ## Installation

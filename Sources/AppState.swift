@@ -309,7 +309,6 @@ final class AppState {
     /**
      * Checks watched ports for state changes and triggers notifications.
      * This is called after each port scan to detect when watched ports start or stop.
-     * Note: Notification logic will be moved to NotificationService in future refactor.
      */
     private func checkWatchedPorts() {
         let activePorts = Set(ports.map { $0.port })
@@ -317,12 +316,16 @@ final class AppState {
             let isActive = activePorts.contains(w.port)
             if let wasActive = previousPortStates[w.port] {
                 if wasActive && !isActive && w.notifyOnStop {
-                    // TODO: Move to NotificationService
-                    // notify("Port \(String(w.port)) Available", "Port is now free.")
+                    NotificationService.shared.notify(
+                        title: "Port \(w.port) Available",
+                        body: "Port is now free."
+                    )
                 } else if !wasActive && isActive && w.notifyOnStart {
-                    // TODO: Move to NotificationService
-                    // let name = ports.first { $0.port == w.port }?.processName ?? "Unknown"
-                    // notify("Port \(String(w.port)) In Use", "Used by \(name).")
+                    let name = ports.first { $0.port == w.port }?.processName ?? "Unknown"
+                    NotificationService.shared.notify(
+                        title: "Port \(w.port) In Use",
+                        body: "Used by \(name)."
+                    )
                 }
             }
             previousPortStates[w.port] = isActive

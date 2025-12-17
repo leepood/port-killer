@@ -6,6 +6,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Start as accessory (menu bar only, no Dock icon)
         NSApp.setActivationPolicy(.accessory)
 
+        // Initialize notification service for watched port alerts
+        NotificationService.shared.setup()
+
         // Monitor window visibility to toggle Dock icon
         NotificationCenter.default.addObserver(
             self,
