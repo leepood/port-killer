@@ -134,12 +134,16 @@ final class TunnelManager {
                 try? await Task.sleep(for: .seconds(3))
 
                 if !process.isRunning && tunnelState.status != .active {
+                    // Clean up handlers when process terminates unexpectedly
+                    await self.cloudflaredService.removeHandlers(for: tunnelState.id)
                     await MainActor.run {
                         tunnelState.status = .error
                         tunnelState.lastError = "Process terminated unexpectedly"
                     }
                 }
             } catch {
+                // Clean up handlers on error
+                await self.cloudflaredService.removeHandlers(for: tunnelState.id)
                 await MainActor.run {
                     tunnelState.status = .error
                     tunnelState.lastError = error.localizedDescription

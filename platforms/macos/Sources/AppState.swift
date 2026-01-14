@@ -175,4 +175,8 @@ final class AppState {
         setupKeyboardShortcuts()
         startAutoRefresh()
     }
+
+    deinit {
+        refreshTask?.cancel()
+    }
 }

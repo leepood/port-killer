@@ -20,6 +20,7 @@ struct MenuBarView: View {
     @Default(.useTreeView) private var useTreeView
     @Default(.hideSystemProcesses) private var hideSystemProcesses
     @State private var cachedGroups: [ProcessGroup] = []
+    @State private var groupingTrigger = 0
 
     private var groupedByProcess: [ProcessGroup] { cachedGroups }
 
@@ -108,9 +109,14 @@ struct MenuBarView: View {
             )
         }
         .frame(width: 340)
-        .onAppear { updateGroupedByProcess() }
-        .onChange(of: state.ports) { _, _ in updateGroupedByProcess() }
-        .onChange(of: searchText) { _, _ in updateGroupedByProcess() }
-        .onChange(of: hideSystemProcesses) { _, _ in updateGroupedByProcess() }
+        .onAppear { groupingTrigger += 1 }
+        .onChange(of: state.ports) { _, _ in groupingTrigger += 1 }
+        .onChange(of: searchText) { _, _ in groupingTrigger += 1 }
+        .onChange(of: hideSystemProcesses) { _, _ in groupingTrigger += 1 }
+        .task(id: groupingTrigger) {
+            // Debounce rapid changes to avoid excessive CPU/memory churn
+            try? await Task.sleep(for: .milliseconds(100))
+            updateGroupedByProcess()
+        }
     }
 }

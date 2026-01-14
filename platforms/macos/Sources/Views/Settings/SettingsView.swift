@@ -25,7 +25,6 @@ struct SettingsView: View {
     @Environment(\.openWindow) private var openWindow
     @State private var hasAccessibility = AXIsProcessTrusted()
     @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
-    @State private var permissionCheckTimer: Timer?
     @State private var sponsorDisplayInterval = Defaults[.sponsorDisplayInterval]
 
     var body: some View {
@@ -182,12 +181,13 @@ struct SettingsView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(nsColor: .windowBackgroundColor))
-        .onAppear {
-            checkPermissions()
-            startPermissionTimer()
-        }
-        .onDisappear {
-            stopPermissionTimer()
+        .task {
+            // Periodically check permissions while view is visible
+            // Task automatically cancels when view disappears
+            while !Task.isCancelled {
+                checkPermissions()
+                try? await Task.sleep(for: .seconds(5))
+            }
         }
     }
 
@@ -212,22 +212,6 @@ struct SettingsView: View {
                 notificationStatus = settings.authorizationStatus
             }
         }
-    }
-
-    /// Starts timer to periodically check permissions
-    private func startPermissionTimer() {
-        guard permissionCheckTimer == nil else { return }
-        permissionCheckTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { _ in
-            Task { @MainActor in
-                self.checkPermissions()
-            }
-        }
-    }
-
-    /// Stops permission check timer
-    private func stopPermissionTimer() {
-        permissionCheckTimer?.invalidate()
-        permissionCheckTimer = nil
     }
 
     /// Requests notification permission from user

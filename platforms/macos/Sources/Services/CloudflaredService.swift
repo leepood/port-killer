@@ -101,7 +101,7 @@ actor CloudflaredService {
         let task = Task { [weak self] in
             let handle = pipe.fileHandleForReading
 
-            while true {
+            while !Task.isCancelled {
                 let data = handle.availableData
                 if data.isEmpty { break }
 
