@@ -34,6 +34,7 @@ public class SettingsService
         public int RefreshInterval { get; set; } = 5;
         public bool AutoStart { get; set; }
         public bool ShowNotifications { get; set; } = true;
+        public string CloudflaredProtocol { get; set; } = "http2";
     }
 
     private SettingsData LoadSettingsData()
@@ -133,6 +134,20 @@ public class SettingsService
     {
         var data = LoadSettingsData();
         data.ShowNotifications = show;
+        SaveSettingsData(data);
+    }
+
+    // Cloudflared Protocol
+    public CloudflaredProtocol GetCloudflaredProtocol()
+    {
+        var data = LoadSettingsData();
+        return CloudflaredProtocolExtensions.FromString(data.CloudflaredProtocol);
+    }
+
+    public void SaveCloudflaredProtocol(CloudflaredProtocol protocol)
+    {
+        var data = LoadSettingsData();
+        data.CloudflaredProtocol = protocol.ToArgument();
         SaveSettingsData(data);
     }
 

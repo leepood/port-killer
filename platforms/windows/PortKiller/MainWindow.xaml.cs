@@ -23,6 +23,7 @@ public partial class MainWindow : Window
 
         _viewModel = App.Services.GetRequiredService<MainViewModel>();
         _tunnelViewModel = App.Services.GetRequiredService<TunnelViewModel>();
+        TunnelProtocolCombo.DataContext = _tunnelViewModel;
         InitializeAsync();
         
         // Setup keyboard shortcuts

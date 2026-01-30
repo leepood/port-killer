@@ -46,7 +46,8 @@ public partial class App : Application
         ));
         services.AddSingleton<TunnelViewModel>(sp => new TunnelViewModel(
             sp.GetRequiredService<TunnelService>(),
-            NotificationService.Instance
+            NotificationService.Instance,
+            sp.GetRequiredService<SettingsService>()
         ));
     }
 }

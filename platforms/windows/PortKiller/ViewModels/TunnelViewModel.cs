@@ -16,10 +16,13 @@ public class TunnelViewModel : INotifyPropertyChanged
 {
     private readonly TunnelService _tunnelService;
     private readonly NotificationService _notificationService;
+    private readonly SettingsService _settings;
     private readonly DispatcherTimer _uptimeTimer;
     private bool _isCloudflaredInstalled;
+    private CloudflaredProtocol _cloudflaredProtocol;
 
     public ObservableCollection<CloudflareTunnel> Tunnels { get; }
+    public IReadOnlyList<CloudflaredProtocolOption> ProtocolOptions { get; }
 
     public bool IsCloudflaredInstalled
     {
@@ -29,14 +32,33 @@ public class TunnelViewModel : INotifyPropertyChanged
 
     public int ActiveTunnelCount => Tunnels.Count(t => t.Status == TunnelStatus.Active);
 
-    public TunnelViewModel(TunnelService tunnelService, NotificationService notificationService)
+    public CloudflaredProtocol CloudflaredProtocol
+    {
+        get => _cloudflaredProtocol;
+        set
+        {
+            if (SetField(ref _cloudflaredProtocol, value))
+            {
+                _settings.SaveCloudflaredProtocol(value);
+            }
+        }
+    }
+
+    public TunnelViewModel(TunnelService tunnelService, NotificationService notificationService, SettingsService settings)
     {
         _tunnelService = tunnelService;
         _notificationService = notificationService;
+        _settings = settings;
         Tunnels = new ObservableCollection<CloudflareTunnel>();
+        ProtocolOptions = new List<CloudflaredProtocolOption>
+        {
+            new(CloudflaredProtocol.Http2, "HTTP/2"),
+            new(CloudflaredProtocol.Quic, "QUIC")
+        };
 
         // Check if cloudflared is installed
         IsCloudflaredInstalled = _tunnelService.IsCloudflaredInstalled;
+        CloudflaredProtocol = _settings.GetCloudflaredProtocol();
 
         // Set up timer to update uptime every second
         _uptimeTimer = new DispatcherTimer
@@ -123,7 +145,7 @@ public class TunnelViewModel : INotifyPropertyChanged
 
         try
         {
-            await _tunnelService.StartTunnelAsync(tunnel);
+            await _tunnelService.StartTunnelAsync(tunnel, CloudflaredProtocol);
 
             // Wait a bit to see if URL is detected
             await Task.Delay(3000);
@@ -278,4 +300,16 @@ public class TunnelViewModel : INotifyPropertyChanged
         OnPropertyChanged(propertyName);
         return true;
     }
+}
+
+public sealed class CloudflaredProtocolOption
+{
+    public CloudflaredProtocolOption(CloudflaredProtocol value, string label)
+    {
+        Value = value;
+        Label = label;
+    }
+
+    public CloudflaredProtocol Value { get; }
+    public string Label { get; }
 }

@@ -36,6 +36,9 @@ struct SettingsView: View {
                 // MARK: - Port Forwarding
                 PortForwardingSettingsSection()
 
+                // MARK: - Cloudflare Tunnels
+                CloudflaredSettingsSection()
+
                 // MARK: - Keyboard Shortcuts
                 ShortcutsSection()
 

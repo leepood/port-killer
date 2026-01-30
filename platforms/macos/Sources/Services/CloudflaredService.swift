@@ -1,5 +1,6 @@
 import Foundation
 import Darwin
+import Defaults
 
 // MARK: - Cloudflared Service Actor
 
@@ -48,7 +49,8 @@ actor CloudflaredService {
 
         let process = Process()
         process.executableURL = URL(fileURLWithPath: cloudflaredPath)
-        process.arguments = ["tunnel", "--url", "localhost:\(port)"]
+        let protocolValue = Defaults[.cloudflaredProtocol].rawValue
+        process.arguments = ["tunnel", "--url", "localhost:\(port)", "--protocol", protocolValue]
 
         let pipe = Pipe()
         process.standardOutput = pipe

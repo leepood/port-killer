@@ -80,18 +80,19 @@ public class TunnelService
     /// <summary>
     /// Starts a tunnel for the specified port
     /// </summary>
-    public async Task<Process> StartTunnelAsync(CloudflareTunnel tunnel)
+    public async Task<Process> StartTunnelAsync(CloudflareTunnel tunnel, CloudflaredProtocol protocol)
     {
         var cloudflaredPath = CloudflaredPath;
         if (cloudflaredPath == null)
             throw new InvalidOperationException("cloudflared is not installed");
 
+        var protocolArg = protocol.ToArgument();
         var process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
                 FileName = cloudflaredPath,
-                Arguments = $"tunnel --url localhost:{tunnel.Port}",
+                Arguments = $"tunnel --url localhost:{tunnel.Port} --protocol {protocolArg}",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,

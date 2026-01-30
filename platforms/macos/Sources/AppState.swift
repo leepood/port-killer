@@ -12,6 +12,7 @@ extension Defaults.Keys {
     static let useTreeView = Key<Bool>("useTreeView", default: false)
     static let hideSystemProcesses = Key<Bool>("hideSystemProcesses", default: false)
     static let refreshInterval = Key<Int>("refreshInterval", default: 5)
+    static let cloudflaredProtocol = Key<CloudflaredProtocol>("cloudflaredProtocol", default: .http2)
 
     // Kubernetes-related keys
     static let customNamespaces = Key<[String]>("customNamespaces", default: [])
